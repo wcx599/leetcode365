@@ -1,0 +1,8 @@
+digraph G {
+rankdir=LR
+a->b->c->d->e
+b->d
+a->c
+b->e
+a->d
+}

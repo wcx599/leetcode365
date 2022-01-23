@@ -1,0 +1,2087 @@
+--------------------------------------------------------------------------------
+Profile data file 'callgrind.out.24541' (creator: callgrind-3.13.0)
+--------------------------------------------------------------------------------
+I1 cache: 
+D1 cache: 
+LL cache: 
+Timerange: Basic block 0 - 2193341890
+Trigger: Program termination
+Profiled target:  ./slow (PID 24541, part 1)
+Events recorded:  Ir
+Events shown:     Ir
+Event sort order: Ir
+Thresholds:       99
+Include dirs:     
+User annotated:   
+Auto-annotation:  on
+
+--------------------------------------------------------------------------------
+            Ir 
+--------------------------------------------------------------------------------
+15,339,385,208  PROGRAM TOTALS
+
+--------------------------------------------------------------------------------
+            Ir  file:function
+--------------------------------------------------------------------------------
+15,339,385,208  ???:0x0000000000000dd0 [/usr/lib64/ld-2.25.so]
+15,339,274,304  ???:_start [/home/accts/aspnes/g/classes/223/notes/examples/profiling/slow]
+15,339,274,293  /usr/src/debug/glibc-2.25-123-gedcf13e25c/csu/../csu/libc-start.c:(below main) [/usr/lib64/libc-2.25.so]
+15,339,273,103  /home/accts/aspnes/223/notes/examples/profiling/slow.c:main [/home/accts/aspnes/g/classes/223/notes/examples/profiling/slow]
+11,264,058,263  /home/accts/aspnes/223/notes/examples/profiling/slow.c:copyEvenCharacters [/home/accts/aspnes/g/classes/223/notes/examples/profiling/slow]
+11,260,141,740  /usr/src/debug/glibc-2.25-123-gedcf13e25c/string/../sysdeps/x86_64/strlen.S:strlen [/usr/lib64/ld-2.25.so]
+ 4,075,049,055  /home/accts/aspnes/223/notes/examples/profiling/slow.c:replicate [/home/accts/aspnes/g/classes/223/notes/examples/profiling/slow]
+ 4,074,048,083  /usr/src/debug/glibc-2.25-123-gedcf13e25c/string/../sysdeps/x86_64/multiarch/strcat-ssse3.S:__strcat_ssse3 [/usr/lib64/libc-2.25.so]
+       108,795  /usr/src/debug/glibc-2.25-123-gedcf13e25c/elf/rtld.c:_dl_start [/usr/lib64/ld-2.25.so]
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /usr/src/debug/glibc-2.25-123-gedcf13e25c/csu/../csu/libc-start.c
+--------------------------------------------------------------------------------
+Ir 
+
+-- line 125 ----------------------------------------
+ .  LIBC_START_MAIN (int (*main) (int, char **, char ** MAIN_AUXVEC_DECL),
+ .  		 int argc, char **argv,
+ .  #ifdef LIBC_START_MAIN_AUXVEC_ARG
+ .  		 ElfW(auxv_t) *auxvec,
+ .  #endif
+ .  		 __typeof (main) init,
+ .  		 void (*fini) (void),
+ .  		 void (*rtld_fini) (void), void *stack_end)
+10  {
+ .    /* Result of the 'main' function.  */
+ .    int result;
+ .  
+ 9    __libc_multiple_libcs = &_dl_starting_up && !_dl_starting_up;
+ .  
+ .  #ifndef SHARED
+ .    char **ev = &argv[argc + 1];
+ .  
+ .    __environ = ev;
+ .  
+ .    /* Store the lowest stack address.  This is done in ld.so if this is
+ .       the code for the DSO.  */
+-- line 145 ----------------------------------------
+-- line 216 ----------------------------------------
+ .    THREAD_SET_POINTER_GUARD (pointer_chk_guard);
+ .  # else
+ .    __pointer_chk_guard_local = pointer_chk_guard;
+ .  # endif
+ .  
+ .  #endif
+ .  
+ .    /* Register the destructor of the dynamic linker if there is any.  */
+ 2    if (__glibc_likely (rtld_fini != NULL))
+ 4      __cxa_atexit ((void (*) (void *)) rtld_fini, NULL, NULL);
+60  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/stdlib/cxa_atexit.c:__cxa_atexit (1x)
+ .  
+ .  #ifndef SHARED
+ .    /* Call the initializer of the libc.  This is only needed here if we
+ .       are compiling for the static library in which case we haven't
+ .       run the constructors in `_dl_start_user'.  */
+ .    __libc_init_first (argc, argv, __environ);
+ .  
+ .    /* Register the destructor of the program, if any.  */
+-- line 233 ----------------------------------------
+-- line 239 ----------------------------------------
+ .       only for statically linked applications since otherwise the dynamic
+ .       loader did the work already.  */
+ .    if (__builtin_expect (__libc_enable_secure, 0))
+ .      __libc_check_standard_fds ();
+ .  #endif
+ .  
+ .    /* Call the initializer of the program, if any.  */
+ .  #ifdef SHARED
+ 4    if (__builtin_expect (GLRO(dl_debug_mask) & DL_DEBUG_IMPCALLS, 0))
+ .      GLRO(dl_debug_printf) ("\ninitialize program: %s\n\n", argv[0]);
+ .  #endif
+ 2    if (init)
+ 5      (*init) (argc, argv, __environ MAIN_AUXVEC_PARAM);
+56  => ???:__libc_csu_init (1x)
+ .  
+ .  #ifdef SHARED
+ .    /* Auditing checkpoint: we have a new object.  */
+ 4    if (__glibc_unlikely (GLRO(dl_naudit) > 0))
+ .      {
+ .        struct audit_ifaces *afct = GLRO(dl_audit);
+ .        struct link_map *head = GL(dl_ns)[LM_ID_BASE]._ns_loaded;
+ .        for (unsigned int cnt = 0; cnt < GLRO(dl_naudit); ++cnt)
+ .  	{
+ .  	  if (afct->preinit != NULL)
+ .  	    afct->preinit (&head->l_audit[cnt].cookie);
+ .  
+ .  	  afct = afct->next;
+ .  	}
+ .      }
+ .  #endif
+ .  
+ .  #ifdef SHARED
+ 2    if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_IMPCALLS))
+ .      GLRO(dl_debug_printf) ("\ntransferring control: %s\n\n", argv[0]);
+ .  #endif
+ .  
+ .  #ifndef SHARED
+ .    _dl_debug_initialize (0, LM_ID_BASE);
+ .  #endif
+ .  #ifdef HAVE_CLEANUP_JMP_BUF
+ .    /* Memory for the cancellation buffer.  */
+ .    struct pthread_unwind_buf unwind_buf;
+ .  
+ .    int not_first_call;
+ 2    not_first_call = setjmp ((struct __jmp_buf_tag *) unwind_buf.cancel_jmp_buf);
+29  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/setjmp/../sysdeps/x86_64/bsd-_setjmp.S:_setjmp (1x)
+ 2    if (__glibc_likely (! not_first_call))
+ .      {
+ .        struct pthread *self = THREAD_SELF;
+ .  
+ .        /* Store old info.  */
+ 2        unwind_buf.priv.data.prev = THREAD_GETMEM (self, cleanup_jmp_buf);
+ 2        unwind_buf.priv.data.cleanup = THREAD_GETMEM (self, cleanup);
+ .  
+ .        /* Store the new cleanup handler info.  */
+ 2        THREAD_SETMEM (self, cleanup_jmp_buf, &unwind_buf);
+ .  
+ .        /* Run the program.  */
+ 6        result = main (argc, argv, __environ MAIN_AUXVEC_PARAM);
+15,339,273,103  => /home/accts/aspnes/223/notes/examples/profiling/slow.c:main (1x)
+ .      }
+ .    else
+ .      {
+ .        /* Remove the thread-local data.  */
+ .  # ifdef SHARED
+ .        PTHFCT_CALL (ptr__nptl_deallocate_tsd, ());
+ .  # else
+ .        extern void __nptl_deallocate_tsd (void) __attribute ((weak));
+-- line 303 ----------------------------------------
+-- line 321 ----------------------------------------
+ .  	/* Not much left to do but to exit the thread, not the process.  */
+ .  	__exit_thread ();
+ .      }
+ .  #else
+ .    /* Nothing fancy, just call the function.  */
+ .    result = main (argc, argv, __environ MAIN_AUXVEC_PARAM);
+ .  #endif
+ .  
+ 2    exit (result);
+985  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/stdlib/exit.c:exit (1x)
+ .  }
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /usr/src/debug/glibc-2.25-123-gedcf13e25c/string/../sysdeps/x86_64/strlen.S
+--------------------------------------------------------------------------------
+         Ir 
+
+-- line 58 ----------------------------------------
+          .  /* Initialize long lived registers.  */
+          .  
+          .  	add	%rdi, %rsi
+          .  	mov	%rsi, %r10
+          .  	and	$-64, %r10
+          .  	mov	%rsi, %r11
+          .  #endif
+          .  
+    200,034  	pxor	%xmm0, %xmm0
+    200,034  	pxor	%xmm1, %xmm1
+    200,034  	pxor	%xmm2, %xmm2
+    200,034  	pxor	%xmm3, %xmm3
+    200,034  	movq	%rdi, %rax
+    200,034  	movq	%rdi, %rcx
+    200,034  	andq	$4095, %rcx
+          .  /* Offsets 4032-4047 will be aligned into 4032 thus fit into page.  */
+    200,034  	cmpq	$4047, %rcx
+          .  /* We cannot unify this branching as it would be ~6 cycles slower.  */
+    200,034  	ja	L(cross_page)
+          .  
+          .  #ifdef AS_STRNLEN
+          .  /* Test if end is among first 64 bytes.  */
+          .  # define STRNLEN_PROLOG	\
+          .  	mov	%r11, %rsi;	\
+          .  	subq	%rax, %rsi;	\
+          .  	andq	$-64, %rax;	\
+          .  	testq	$-64, %rsi;	\
+-- line 84 ----------------------------------------
+-- line 98 ----------------------------------------
+          .  	bsfq	%rdx, %rax;	\
+          .  	ret
+          .  
+          .  #ifdef AS_STRNLEN
+          .  	andq	$-16, %rax
+          .  	FIND_ZERO
+          .  #else
+          .  	/* Test first 16 bytes unaligned.  */
+    200,033  	movdqu	(%rax), %xmm4
+    200,033  	pcmpeqb	%xmm0, %xmm4
+    200,033  	pmovmskb	%xmm4, %edx
+    200,033  	test	%edx, %edx
+    200,033  	je 	L(next48_bytes)
+          3  	bsf	%edx, %eax /* If eax is zeroed 16bit bsf can be used.  */
+          3  	ret
+          .  
+          .  L(next48_bytes):
+          .  /* Same as FIND_ZERO except we do not check first 16 bytes.  */
+    200,030  	andq	$-16, %rax
+    200,030  	pcmpeqb 16(%rax), %xmm1
+    200,030  	pcmpeqb 32(%rax), %xmm2
+    200,030  	pcmpeqb 48(%rax), %xmm3
+    200,030  	pmovmskb	%xmm1, %edx
+    200,030  	pmovmskb	%xmm2, %r8d
+    200,030  	pmovmskb	%xmm3, %ecx
+    200,030  	salq	$16, %rdx
+    200,030  	salq	$16, %rcx
+    200,030  	orq	%r8, %rcx
+    200,030  	salq	$32, %rcx
+    200,030  	orq	%rcx, %rdx
+          .  #endif
+          .  
+          .  	/* When no zero byte is found xmm1-3 are zero so we do not have to
+          .  	   zero them.  */
+  1,200,234  	PROLOG(loop)
+          .  
+          .  	.p2align 4
+          .  L(cross_page):
+          1  	andq	$-64, %rax
+         14  	FIND_ZERO
+          8  	PROLOG(loop_init)
+          .  
+          .  #ifdef AS_STRNLEN
+          .  /* We must do this check to correctly handle strnlen (s, -1).  */
+          .  L(strnlen_ret):
+          .  	bts	%rsi, %rdx
+          .  	sarq	%cl, %rdx
+          .  	test	%rdx, %rdx
+          .  	je	L(loop_init)
+-- line 146 ----------------------------------------
+-- line 195 ----------------------------------------
+          .  	ret
+          .  
+          .  #else
+          .  
+          .  	/* Main loop.  Unrolled twice to improve L2 cache performance on core2.  */
+          .  	.p2align 4
+          .  L(loop):
+          .  
+625,007,813  	movdqa	64(%rax), %xmm0
+625,007,813  	pminub	80(%rax), %xmm0
+625,007,813  	pminub	96(%rax), %xmm0
+625,007,813  	pminub	112(%rax), %xmm0
+625,007,813  	pcmpeqb	%xmm3, %xmm0
+625,007,813  	pmovmskb	%xmm0, %edx
+625,007,813  	testl	%edx, %edx
+625,007,813  	jne	L(exit64)
+          .  
+625,007,812  	subq	$-128, %rax
+          .  
+625,007,812  	movdqa	(%rax), %xmm0
+625,007,812  	pminub	16(%rax), %xmm0
+625,007,812  	pminub	32(%rax), %xmm0
+625,007,812  	pminub	48(%rax), %xmm0
+625,007,812  	pcmpeqb	%xmm3, %xmm0
+625,007,812  	pmovmskb	%xmm0, %edx
+625,007,812  	testl	%edx, %edx
+625,007,812  	jne	L(exit0)
+624,807,810  	jmp	L(loop)
+          .  
+          .  	.p2align 4
+          .  L(exit64):
+          1  	addq	$64, %rax
+          .  L(exit0):
+    200,003  	pxor	%xmm0, %xmm0
+  2,800,042  	FIND_ZERO
+          .  
+    200,003  	bsfq	%rdx, %rdx
+    200,003  	addq	%rdx, %rax
+    200,003  	subq	%rdi, %rax
+    200,003  	ret
+          .  
+          .  #endif
+          .  
+          .  END(strlen)
+          .  libc_hidden_builtin_def (strlen)
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /usr/src/debug/glibc-2.25-123-gedcf13e25c/string/../sysdeps/x86_64/multiarch/strcat-ssse3.S
+--------------------------------------------------------------------------------
+         Ir 
+
+-- line 32 ----------------------------------------
+          .  # ifdef USE_AS_STRNCAT
+          .  	mov	%rdx, %r8
+          .  # endif
+          .  
+          .  
+          .  /* Inline corresponding strlen file, temporary until new strcpy
+          .     implementation gets merged.  */
+          .  
+    100,010  	xor	%eax, %eax
+    100,010  	cmpb	$0, (%rdi)
+    100,010  	jz	L(exit_tail0)
+    100,008  	cmpb	$0, 1(%rdi)
+    100,008  	jz	L(exit_tail1)
+    100,008  	cmpb	$0, 2(%rdi)
+    100,008  	jz	L(exit_tail2)
+    100,008  	cmpb	$0, 3(%rdi)
+    100,008  	jz	L(exit_tail3)
+          .  
+    100,008  	cmpb	$0, 4(%rdi)
+    100,008  	jz	L(exit_tail4)
+    100,006  	cmpb	$0, 5(%rdi)
+    100,006  	jz	L(exit_tail5)
+    100,006  	cmpb	$0, 6(%rdi)
+    100,006  	jz	L(exit_tail6)
+    100,006  	cmpb	$0, 7(%rdi)
+    100,006  	jz	L(exit_tail7)
+          .  
+    100,006  	cmpb	$0, 8(%rdi)
+    100,006  	jz	L(exit_tail8)
+    100,004  	cmpb	$0, 9(%rdi)
+    100,004  	jz	L(exit_tail9)
+    100,004  	cmpb	$0, 10(%rdi)
+    100,004  	jz	L(exit_tail10)
+    100,004  	cmpb	$0, 11(%rdi)
+    100,004  	jz	L(exit_tail11)
+          .  
+    100,004  	cmpb	$0, 12(%rdi)
+    100,004  	jz	L(exit_tail12)
+    100,002  	cmpb	$0, 13(%rdi)
+    100,002  	jz	L(exit_tail13)
+    100,002  	cmpb	$0, 14(%rdi)
+    100,002  	jz	L(exit_tail14)
+    100,002  	cmpb	$0, 15(%rdi)
+    100,002  	jz	L(exit_tail15)
+    100,002  	pxor	%xmm0, %xmm0
+    100,002  	lea	16(%rdi), %rcx
+    100,002  	lea	16(%rdi), %rax
+    100,002  	and	$-16, %rax
+          .  
+    100,002  	pcmpeqb	(%rax), %xmm0
+    100,002  	pmovmskb %xmm0, %edx
+    100,002  	pxor	%xmm1, %xmm1
+    100,002  	test	%edx, %edx
+    100,002  	lea	16(%rax), %rax
+    100,002  	jnz	L(exit)
+          .  
+     99,994  	pcmpeqb	(%rax), %xmm1
+     99,994  	pmovmskb %xmm1, %edx
+     99,994  	pxor	%xmm2, %xmm2
+     99,994  	test	%edx, %edx
+     99,994  	lea	16(%rax), %rax
+     99,994  	jnz	L(exit)
+          .  
+     99,988  	pcmpeqb	(%rax), %xmm2
+     99,988  	pmovmskb %xmm2, %edx
+     99,988  	pxor	%xmm3, %xmm3
+     99,988  	test	%edx, %edx
+     99,988  	lea	16(%rax), %rax
+     99,988  	jnz	L(exit)
+          .  
+     99,984  	pcmpeqb	(%rax), %xmm3
+     99,984  	pmovmskb %xmm3, %edx
+     99,984  	test	%edx, %edx
+     99,984  	lea	16(%rax), %rax
+     99,984  	jnz	L(exit)
+          .  
+     99,980  	pcmpeqb	(%rax), %xmm0
+     99,980  	pmovmskb %xmm0, %edx
+     99,980  	test	%edx, %edx
+     99,980  	lea	16(%rax), %rax
+     99,980  	jnz	L(exit)
+          .  
+     99,976  	pcmpeqb	(%rax), %xmm1
+     99,976  	pmovmskb %xmm1, %edx
+     99,976  	test	%edx, %edx
+     99,976  	lea	16(%rax), %rax
+     99,976  	jnz	L(exit)
+          .  
+     99,972  	pcmpeqb	(%rax), %xmm2
+     99,972  	pmovmskb %xmm2, %edx
+     99,972  	test	%edx, %edx
+     99,972  	lea	16(%rax), %rax
+     99,972  	jnz	L(exit)
+          .  
+     99,968  	pcmpeqb	(%rax), %xmm3
+     99,968  	pmovmskb %xmm3, %edx
+     99,968  	test	%edx, %edx
+     99,968  	lea	16(%rax), %rax
+     99,968  	jnz	L(exit)
+          .  
+     99,964  	pcmpeqb	(%rax), %xmm0
+     99,964  	pmovmskb %xmm0, %edx
+     99,964  	test	%edx, %edx
+     99,964  	lea	16(%rax), %rax
+     99,964  	jnz	L(exit)
+          .  
+     99,960  	pcmpeqb	(%rax), %xmm1
+     99,960  	pmovmskb %xmm1, %edx
+     99,960  	test	%edx, %edx
+     99,960  	lea	16(%rax), %rax
+     99,960  	jnz	L(exit)
+          .  
+     99,956  	pcmpeqb	(%rax), %xmm2
+     99,956  	pmovmskb %xmm2, %edx
+     99,956  	test	%edx, %edx
+     99,956  	lea	16(%rax), %rax
+     99,956  	jnz	L(exit)
+          .  
+     99,952  	pcmpeqb	(%rax), %xmm3
+     99,952  	pmovmskb %xmm3, %edx
+     99,952  	test	%edx, %edx
+     99,952  	lea	16(%rax), %rax
+     99,952  	jnz	L(exit)
+          .  
+     99,948  	pcmpeqb	(%rax), %xmm0
+     99,948  	pmovmskb %xmm0, %edx
+     99,948  	test	%edx, %edx
+     99,948  	lea	16(%rax), %rax
+     99,948  	jnz	L(exit)
+          .  
+     99,944  	pcmpeqb	(%rax), %xmm1
+     99,944  	pmovmskb %xmm1, %edx
+     99,944  	test	%edx, %edx
+     99,944  	lea	16(%rax), %rax
+     99,944  	jnz	L(exit)
+          .  
+     99,940  	pcmpeqb	(%rax), %xmm2
+     99,940  	pmovmskb %xmm2, %edx
+     99,940  	test	%edx, %edx
+     99,940  	lea	16(%rax), %rax
+     99,940  	jnz	L(exit)
+          .  
+     99,936  	pcmpeqb	(%rax), %xmm3
+     99,936  	pmovmskb %xmm3, %edx
+     99,936  	test	%edx, %edx
+     99,936  	lea	16(%rax), %rax
+     99,936  	jnz	L(exit)
+          .  
+    199,864  	and	$-0x40, %rax
+          .  
+          .  	.p2align 4
+          .  L(aligned_64):
+312,175,076  	pcmpeqb	(%rax), %xmm0
+312,175,076  	pcmpeqb	16(%rax), %xmm1
+312,175,076  	pcmpeqb	32(%rax), %xmm2
+312,175,076  	pcmpeqb	48(%rax), %xmm3
+312,175,076  	pmovmskb %xmm0, %edx
+312,175,076  	pmovmskb %xmm1, %r11d
+312,175,076  	pmovmskb %xmm2, %r10d
+312,175,076  	pmovmskb %xmm3, %r9d
+312,175,076  	or	%edx, %r9d
+312,175,076  	or	%r11d, %r9d
+312,175,076  	or	%r10d, %r9d
+312,175,076  	lea	64(%rax), %rax
+312,175,076  	jz	L(aligned_64)
+          .  
+     99,932  	test	%edx, %edx
+     99,932  	jnz	L(aligned_64_exit_16)
+     74,948  	test	%r11d, %r11d
+     74,948  	jnz	L(aligned_64_exit_32)
+     49,968  	test	%r10d, %r10d
+     49,968  	jnz	L(aligned_64_exit_48)
+          .  
+          .  L(aligned_64_exit_64):
+     24,984  	pmovmskb %xmm3, %edx
+     24,984  	jmp	L(exit)
+          .  
+          .  L(aligned_64_exit_48):
+     24,984  	lea	-16(%rax), %rax
+     24,984  	mov	%r10d, %edx
+     24,984  	jmp	L(exit)
+          .  
+          .  L(aligned_64_exit_32):
+     24,980  	lea	-32(%rax), %rax
+     24,980  	mov	%r11d, %edx
+     24,980  	jmp	L(exit)
+          .  
+          .  L(aligned_64_exit_16):
+     24,984  	lea	-48(%rax), %rax
+          .  
+          .  L(exit):
+    100,002  	sub	%rcx, %rax
+    100,002  	test	%dl, %dl
+    100,002  	jz	L(exit_high)
+     50,002  	test	$0x01, %dl
+     50,002  	jnz	L(exit_tail0)
+          .  
+     25,001  	test	$0x02, %dl
+     25,001  	jnz	L(exit_tail1)
+          .  
+     25,001  	test	$0x04, %dl
+     25,001  	jnz	L(exit_tail2)
+          .  
+     25,001  	test	$0x08, %dl
+     25,001  	jnz	L(exit_tail3)
+          .  
+     25,001  	test	$0x10, %dl
+     25,001  	jnz	L(exit_tail4)
+          .  
+          .  	test	$0x20, %dl
+          .  	jnz	L(exit_tail5)
+          .  
+          .  	test	$0x40, %dl
+          .  	jnz	L(exit_tail6)
+          .  	add	$7, %eax
+          .  L(exit_tail0):
+     50,003  	jmp	L(StartStrcpyPart)
+          .  
+          .  	.p2align 4
+          .  L(exit_high):
+     50,000  	add	$8, %eax
+     50,000  	test	$0x01, %dh
+     50,000  	jnz	L(exit_tail0)
+          .  
+     25,000  	test	$0x02, %dh
+     25,000  	jnz	L(exit_tail1)
+          .  
+     25,000  	test	$0x04, %dh
+     25,000  	jnz	L(exit_tail2)
+          .  
+     25,000  	test	$0x08, %dh
+     25,000  	jnz	L(exit_tail3)
+          .  
+     25,000  	test	$0x10, %dh
+     25,000  	jnz	L(exit_tail4)
+          .  
+          .  	test	$0x20, %dh
+          .  	jnz	L(exit_tail5)
+          .  
+          .  	test	$0x40, %dh
+          .  	jnz	L(exit_tail6)
+          .  	add	$7, %eax
+          .  	jmp	L(StartStrcpyPart)
+-- line 274 ----------------------------------------
+-- line 285 ----------------------------------------
+          .  
+          .  	.p2align 4
+          .  L(exit_tail3):
+          .  	add	$3, %eax
+          .  	jmp	L(StartStrcpyPart)
+          .  
+          .  	.p2align 4
+          .  L(exit_tail4):
+     50,003  	add	$4, %eax
+     50,003  	jmp	L(StartStrcpyPart)
+          .  
+          .  	.p2align 4
+          .  L(exit_tail5):
+          .  	add	$5, %eax
+          .  	jmp	L(StartStrcpyPart)
+          .  
+          .  	.p2align 4
+          .  L(exit_tail6):
+-- line 302 ----------------------------------------
+-- line 305 ----------------------------------------
+          .  
+          .  	.p2align 4
+          .  L(exit_tail7):
+          .  	add	$7, %eax
+          .  	jmp	L(StartStrcpyPart)
+          .  
+          .  	.p2align 4
+          .  L(exit_tail8):
+          2  	add	$8, %eax
+          2  	jmp	L(StartStrcpyPart)
+          .  
+          .  	.p2align 4
+          .  L(exit_tail9):
+          .  	add	$9, %eax
+          .  	jmp	L(StartStrcpyPart)
+          .  
+          .  	.p2align 4
+          .  L(exit_tail10):
+-- line 322 ----------------------------------------
+-- line 325 ----------------------------------------
+          .  
+          .  	.p2align 4
+          .  L(exit_tail11):
+          .  	add	$11, %eax
+          .  	jmp	L(StartStrcpyPart)
+          .  
+          .  	.p2align 4
+          .  L(exit_tail12):
+          2  	add	$12, %eax
+          2  	jmp	L(StartStrcpyPart)
+          .  
+          .  	.p2align 4
+          .  L(exit_tail13):
+          .  	add	$13, %eax
+          .  	jmp	L(StartStrcpyPart)
+          .  
+          .  	.p2align 4
+          .  L(exit_tail14):
+-- line 342 ----------------------------------------
+-- line 344 ----------------------------------------
+          .  	jmp	L(StartStrcpyPart)
+          .  
+          .  	.p2align 4
+          .  L(exit_tail15):
+          .  	add	$15, %eax
+          .  
+          .  	.p2align 4
+          .  L(StartStrcpyPart):
+    100,010  	mov	%rsi, %rcx
+    100,010  	lea	(%rdi, %rax), %rdx
+          .  # ifdef USE_AS_STRNCAT
+          .  	test	%r8, %r8
+          .  	jz	L(StrncatExit0)
+          .  	cmp	$8, %r8
+          .  	jbe	L(StrncatExit8Bytes)
+          .  # endif
+    100,010  	cmpb	$0, (%rcx)
+    100,010  	jz	L(Exit1)
+    100,010  	cmpb	$0, 1(%rcx)
+    100,010  	jz	L(Exit2)
+    100,010  	cmpb	$0, 2(%rcx)
+    100,010  	jz	L(Exit3)
+    100,010  	cmpb	$0, 3(%rcx)
+    100,010  	jz	L(Exit4)
+    100,010  	cmpb	$0, 4(%rcx)
+    100,010  	jz	L(Exit5)
+          .  	cmpb	$0, 5(%rcx)
+          .  	jz	L(Exit6)
+          .  	cmpb	$0, 6(%rcx)
+          .  	jz	L(Exit7)
+          .  	cmpb	$0, 7(%rcx)
+          .  	jz	L(Exit8)
+          .  	cmpb	$0, 8(%rcx)
+          .  	jz	L(Exit9)
+-- line 377 ----------------------------------------
+-- line 492 ----------------------------------------
+          .  	mov	%rdi, %rax
+          .  	ret
+          .  
+          .  	.p2align 4
+          .  L(StrncatExit5):
+          .  	xor	%ah, %ah
+          .  	movb	%ah, 5(%rdx)
+          .  L(Exit5):
+    100,010  	mov	(%rcx), %eax
+    100,010  	mov	%eax, (%rdx)
+    100,010  	movb	4(%rcx), %al
+    100,010  	movb	%al, 4(%rdx)
+    100,010  	mov	%rdi, %rax
+    100,010  	ret
+          .  
+          .  	.p2align 4
+          .  L(StrncatExit6):
+          .  	xor	%ah, %ah
+          .  	movb	%ah, 6(%rdx)
+          .  L(Exit6):
+          .  	mov	(%rcx), %eax
+          .  	mov	%eax, (%rdx)
+-- line 513 ----------------------------------------
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /home/accts/aspnes/223/notes/examples/profiling/slow.c
+--------------------------------------------------------------------------------
+       Ir 
+
+-- line 4 ----------------------------------------
+        .  
+        .  #include <string.h>
+        .  
+        .  /* concatenate n copies of src into dest */
+        .  /* returns dest */
+        .  /* caller is responsible for making dest large enough */
+        .  char *
+        .  replicate(char *dest, const char *src, int n)
+       12  {
+        .      /* truncate dest */
+        4      dest[0] = '\0';
+        .  
+        .      /* BAD: each call to strcat requires walking across dest */
+  400,050      for(int i = 0; i < n; i++) {
+  600,064          strcat(dest, src);
+      836  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/elf/../sysdeps/x86_64/dl-trampoline.h:_dl_runtime_resolve_xsave (1x)
+4,074,048,083  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/string/../sysdeps/x86_64/multiarch/strcat-ssse3.S:__strcat_ssse3 (100009x)
+        .      }
+        .  
+        2      return dest;
+        4  }
+        .  
+        .  /* like strcpy, but only copies characters at indices 0, 2, 4, ...
+        .     from src to dest */
+        .  char *
+        .  copyEvenCharacters(char *dest, const char *src)
+       12  {
+        .      int i;
+        .      int j;
+        .  
+        .      /* BAD: Calls strlen on every pass through the loop */
+2,000,226      for(i = 0, j = 0; i < strlen(src); i += 2, j++) {
+11,260,056,980  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/string/../sysdeps/x86_64/strlen.S:strlen (200021x)
+      825  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/elf/../sysdeps/x86_64/dl-trampoline.h:_dl_runtime_resolve_xsave (1x)
+2,000,200          dest[j] = src[i];
+        .      }
+        .  
+       10      dest[j] = '\0';
+        .  
+        2      return dest;
+        8  }
+        .  
+        .  /* like puts, but stops after maxChars characters */
+        .  void
+        .  putsRestricted(const char *s, int maxChars)
+       20  {
+    1,156      for(int i = 0; s[i]; i++) {
+      426          if(i >= maxChars) {
+       32              printf("[%zu more]\n", strlen(s) - i);
+      870  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/stdio-common/printf.c:printf (1x)
+    1,646  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/elf/../sysdeps/x86_64/dl-trampoline.h:_dl_runtime_resolve_xsave (1x)
+   84,476  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/string/../sysdeps/x86_64/strlen.S:strlen (2x)
+        2              return;
+        .          } else {
+    1,264              putchar(s[i]);
+   12,510  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/libio/putchar.c:putchar (139x)
+    1,492  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/elf/../sysdeps/x86_64/dl-trampoline.h:_dl_runtime_resolve_xsave (1x)
+        .          }
+        .      }
+        .  
+        6      putchar('\n');
+      404  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/libio/putchar.c:putchar (2x)
+        8  }
+        .  
+        .  #define SMALL (10)
+        .  #define BIG (100000)
+        .  #define PATTERN "abcd"
+        .  
+        .  #define BUFFER_SIZE (BIG * strlen(PATTERN) + 1)
+        .  
+        .  /* how many characters to print at once */
+        .  #define MAX_CHARS (40)
+        .  
+        .  int
+        .  main(int argc, char **argv)
+        5  {
+        .      char *buffer;
+        .      char *half;
+        .  
+        8      buffer = malloc(BUFFER_SIZE);
+   60,224  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/elf/../sysdeps/x86_64/dl-trampoline.h:_dl_runtime_resolve_xsave (1x)
+        4      half = malloc(BUFFER_SIZE);
+      289  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/malloc/malloc.c:malloc (1x)
+        .  
+        8      putsRestricted(replicate(buffer, PATTERN, SMALL), MAX_CHARS);
+    1,516  => /home/accts/aspnes/223/notes/examples/profiling/slow.c:replicate (1x)
+    6,027  => /home/accts/aspnes/223/notes/examples/profiling/slow.c:putsRestricted (1x)
+        8      putsRestricted(copyEvenCharacters(half, buffer), MAX_CHARS);
+    2,421  => /home/accts/aspnes/223/notes/examples/profiling/slow.c:putsRestricted (1x)
+    1,936  => /home/accts/aspnes/223/notes/examples/profiling/slow.c:copyEvenCharacters (1x)
+        .  
+        8      putsRestricted(replicate(buffer, PATTERN, BIG), MAX_CHARS);
+4,075,047,539  => /home/accts/aspnes/223/notes/examples/profiling/slow.c:replicate (1x)
+   62,384  => /home/accts/aspnes/223/notes/examples/profiling/slow.c:putsRestricted (1x)
+        8      putsRestricted(copyEvenCharacters(half, buffer), MAX_CHARS);
+   33,480  => /home/accts/aspnes/223/notes/examples/profiling/slow.c:putsRestricted (1x)
+11,264,056,327  => /home/accts/aspnes/223/notes/examples/profiling/slow.c:copyEvenCharacters (1x)
+        .  
+        8      free(half);
+      818  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/elf/../sysdeps/x86_64/dl-trampoline.h:_dl_runtime_resolve_xsave (1x)
+        4      free(buffer);
+       78  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/malloc/malloc.c:free (1x)
+        .  
+        1      return 0;
+        2  }
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /usr/src/debug/glibc-2.25-123-gedcf13e25c/elf/rtld.c
+--------------------------------------------------------------------------------
+Ir 
+
+-- line 113 ----------------------------------------
+ .  #endif
+ .  
+ .  /* Check that AT_SECURE=0, or that the passed name does not contain
+ .     directories and is not overly long.  Reject empty names
+ .     unconditionally.  */
+ .  static bool
+ .  dso_name_valid_for_suid (const char *p)
+ .  {
+ 3    if (__glibc_unlikely (__libc_enable_secure))
+ .      {
+ .        /* Ignore pathnames with directories for AT_SECURE=1
+ .  	 programs, and also skip overlong names.  */
+ .        size_t len = strlen (p);
+ .        if (len >= SECURE_NAME_LIMIT || memchr (p, '/', len) != NULL)
+ .  	return false;
+ .      }
+ .    return *p != '\0';
+-- line 129 ----------------------------------------
+-- line 381 ----------------------------------------
+ .  #ifndef DONT_USE_BOOTSTRAP_MAP
+ .    GL(dl_rtld_map).l_addr = info->l.l_addr;
+ .    GL(dl_rtld_map).l_ld = info->l.l_ld;
+ .    memcpy (GL(dl_rtld_map).l_info, info->l.l_info,
+ .  	  sizeof GL(dl_rtld_map).l_info);
+ .    GL(dl_rtld_map).l_mach = info->l.l_mach;
+ .    GL(dl_rtld_map).l_relocated = 1;
+ .  #endif
+ 2    _dl_setup_hash (&GL(dl_rtld_map));
+23  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/elf/dl-lookup.c:_dl_setup_hash (1x)
+ 2    GL(dl_rtld_map).l_real = &GL(dl_rtld_map);
+ 2    GL(dl_rtld_map).l_map_start = (ElfW(Addr)) _begin;
+ 2    GL(dl_rtld_map).l_map_end = (ElfW(Addr)) _end;
+ 2    GL(dl_rtld_map).l_text_end = (ElfW(Addr)) _etext;
+ .    /* Copy the TLS related data if necessary.  */
+ .  #ifndef DONT_USE_BOOTSTRAP_MAP
+ .  # if NO_TLS_OFFSET != 0
+ .    GL(dl_rtld_map).l_tls_offset = NO_TLS_OFFSET;
+ .  # endif
+ .  #endif
+ .  
+ 5    HP_TIMING_NOW (GL(dl_cpuclock_offset));
+ .  
+ .    /* Initialize the stack end variable.  */
+ 1    __libc_stack_end = __builtin_frame_address (0);
+ .  
+ .    /* Call the OS-dependent function to set up life so we can do things like
+ .       file access.  It will call `dl_main' (below) to do all the real work
+ .       of the dynamic linker, and then unwind our frame and run the user
+ .       entry point on the same stack we entered on.  */
+ 4    start_addr = _dl_sysdep_start (arg, &dl_main);
+107,987  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/elf/../elf/dl-sysdep.c:_dl_sysdep_start (1x)
+ .  
+ .  #ifndef HP_TIMING_NONAVAIL
+ .    hp_timing_t rtld_total_time;
+ .    if (HP_SMALL_TIMING_AVAIL)
+ .      {
+ .        hp_timing_t end_time;
+ .  
+ .        /* Get the current time.  */
+ 4        HP_TIMING_NOW (end_time);
+ .  
+ .        /* Compute the difference.  */
+ 2        HP_TIMING_DIFF (rtld_total_time, start_time, end_time);
+ .      }
+ .  #endif
+ .  
+ 2    if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_STATISTICS))
+ .      {
+ .  #ifndef HP_TIMING_NONAVAIL
+ .        print_statistics (&rtld_total_time);
+ .  #else
+ .        print_statistics (NULL);
+ .  #endif
+ .      }
+ .  
+ .    return start_addr;
+ .  }
+ .  
+ .  static ElfW(Addr) __attribute_used__ internal_function
+ .  _dl_start (void *arg)
+ 9  {
+ .  #ifdef DONT_USE_BOOTSTRAP_MAP
+ .  # define bootstrap_map GL(dl_rtld_map)
+ .  #else
+ .    struct dl_start_final_info info;
+ .  # define bootstrap_map info.l
+ .  #endif
+ .  
+ .    /* This #define produces dynamic linking inline functions for
+-- line 448 ----------------------------------------
+-- line 450 ----------------------------------------
+ .       Since ld.so must not have any undefined symbols the result
+ .       is trivial: always the map of ld.so itself.  */
+ .  #define RTLD_BOOTSTRAP
+ .  #define RESOLVE_MAP(sym, version, flags) (&bootstrap_map)
+ .  #include "dynamic-link.h"
+ .  
+ .    if (HP_TIMING_INLINE && HP_SMALL_TIMING_AVAIL)
+ .  #ifdef DONT_USE_BOOTSTRAP_MAP
+ 5      HP_TIMING_NOW (start_time);
+ .  #else
+ .      HP_TIMING_NOW (info.start_time);
+ .  #endif
+ .  
+ .    /* Partly clean the `bootstrap_map' structure up.  Don't use
+ .       `memset' since it might not be built in or inlined and we cannot
+ .       make function calls at this point.  Use '__builtin_memset' if we
+ .       know it is available.  We do not have to clear the memory if we
+-- line 466 ----------------------------------------
+-- line 473 ----------------------------------------
+ .    for (size_t cnt = 0;
+ .         cnt < sizeof (bootstrap_map.l_info) / sizeof (bootstrap_map.l_info[0]);
+ .         ++cnt)
+ .      bootstrap_map.l_info[cnt] = 0;
+ .  # endif
+ .  #endif
+ .  
+ .    /* Figure out the run-time load address of the dynamic linker itself.  */
+ 1    bootstrap_map.l_addr = elf_machine_load_address ();
+ .  
+ .    /* Read our own dynamic section and fill in the info array.  */
+ 1    bootstrap_map.l_ld = (void *) bootstrap_map.l_addr + elf_machine_dynamic ();
+ .    elf_get_dynamic_info (&bootstrap_map, NULL);
+ .  
+ .  #if NO_TLS_OFFSET != 0
+ .    bootstrap_map.l_tls_offset = NO_TLS_OFFSET;
+ .  #endif
+ .  
+ .  #ifdef ELF_MACHINE_BEFORE_RTLD_RELOC
+ .    ELF_MACHINE_BEFORE_RTLD_RELOC (bootstrap_map.l_info);
+ .  #endif
+ .  
+ 2    if (bootstrap_map.l_addr || ! bootstrap_map.l_info[VALIDX(DT_GNU_PRELINKED)])
+ .      {
+ .        /* Relocate ourselves so we can do normal function calls and
+ .  	 data access using the global offset table.  */
+ .  
+16        ELF_DYNAMIC_RELOCATE (&bootstrap_map, 0, 0, 0);
+ .      }
+ 1    bootstrap_map.l_relocated = 1;
+ .  
+ .    /* Please note that we don't allow profiling of this object and
+ .       therefore need not test whether we have to allocate the array
+ .       for the relocation results (as done in dl-reloc.c).  */
+ .  
+ .    /* Now life is sane; we can call functions and access global data.
+ .       Set up to use the operating system facilities, and find out from
+ .       the operating system's program loader where to find the program
+-- line 510 ----------------------------------------
+-- line 519 ----------------------------------------
+ .  #endif
+ .  
+ .  #ifndef ELF_MACHINE_START_ADDRESS
+ .  # define ELF_MACHINE_START_ADDRESS(map, start) (start)
+ .  #endif
+ .  
+ .      return ELF_MACHINE_START_ADDRESS (GL(dl_ns)[LM_ID_BASE]._ns_loaded, entry);
+ .    }
+ 9  }
+ .  
+ .  
+ .  
+ .  /* Now life is peachy; we can do all normal operations.
+ .     On to the real work.  */
+ .  
+ .  /* Some helper functions.  */
+ .  
+-- line 535 ----------------------------------------
+-- line 575 ----------------------------------------
+ .  {
+ .    struct relocate_args *args = (struct relocate_args *) a;
+ .  
+ .    _dl_relocate_object (args->l, args->l->l_scope, args->reloc_mode, 0);
+ .  }
+ .  
+ .  static void
+ .  map_doit (void *a)
+ 2  {
+ .    struct map_args *args = (struct map_args *) a;
+ 4    int type = (args->mode == __RTLD_OPENEXEC) ? lt_executable : lt_library;
+ 6    args->map = _dl_map_object (args->loader, args->str, type, 0,
+2,128  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/elf/dl-load.c:_dl_map_object (1x)
+ .  			      args->mode, LM_ID_BASE);
+ 2  }
+ .  
+ .  static void
+ .  dlmopen_doit (void *a)
+ .  {
+ .    struct dlmopen_args *args = (struct dlmopen_args *) a;
+ .    args->map = _dl_open (args->fname,
+ .  			(RTLD_LAZY | __RTLD_DLOPEN | __RTLD_AUDIT
+ .  			 | __RTLD_SECURE),
+-- line 596 ----------------------------------------
+-- line 608 ----------------------------------------
+ .  				    args->map->l_local_scope, NULL, 0,
+ .  				    DL_LOOKUP_RETURN_NEWEST, NULL);
+ .    if (ref != NULL)
+ .      args->result = DL_SYMBOL_ADDRESS (l, ref);
+ .  }
+ .  
+ .  static void
+ .  version_check_doit (void *a)
+ 2  {
+ .    struct version_check_args *args = (struct version_check_args *) a;
+ 6    if (_dl_check_all_versions (GL(dl_ns)[LM_ID_BASE]._ns_loaded, 1,
+2,403  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/elf/dl-version.c:_dl_check_all_versions (1x)
+ .  			      args->dotrace) && args->doexit)
+ .      /* We cannot start the application.  Abort now.  */
+ .      _exit (1);
+ 2  }
+ .  
+ .  
+ .  static inline struct link_map *
+ .  find_needed (const char *name)
+ .  {
+ .    struct r_scope_elem *scope = &GL(dl_ns)[LM_ID_BASE]._ns_loaded->l_searchlist;
+ .    unsigned int n = scope->r_nlist;
+ .  
+-- line 630 ----------------------------------------
+-- line 668 ----------------------------------------
+ .  
+ .    return 0;
+ .  }
+ .  
+ .  static bool tls_init_tp_called;
+ .  
+ .  static void *
+ .  init_tls (void)
+ 1  {
+ .    /* Number of elements in the static TLS block.  */
+ 2    GL(dl_tls_static_nelem) = GL(dl_tls_max_dtv_idx);
+ .  
+ .    /* Do not do this twice.  The audit interface might have required
+ .       the DTV interfaces to be set up early.  */
+ 2    if (GL(dl_initial_dtv) != NULL)
+ .      return NULL;
+ .  
+ .    /* Allocate the array which contains the information about the
+ .       dtv slots.  We allocate a few entries more than needed to
+ .       avoid the need for reallocation.  */
+ 2    size_t nelem = GL(dl_tls_max_dtv_idx) + 1 + TLS_SLOTINFO_SURPLUS;
+ .  
+ .    /* Allocate.  */
+ 1    GL(dl_tls_dtv_slotinfo_list) = (struct dtv_slotinfo_list *)
+ 4      calloc (sizeof (struct dtv_slotinfo_list)
+28  => ???:0x0000000004000c28 (1x)
+ .  	    + nelem * sizeof (struct dtv_slotinfo), 1);
+ .    /* No need to check the return value.  If memory allocation failed
+ .       the program would have been terminated.  */
+ .  
+ 1    struct dtv_slotinfo *slotinfo = GL(dl_tls_dtv_slotinfo_list)->slotinfo;
+ .    GL(dl_tls_dtv_slotinfo_list)->len = nelem;
+ 1    GL(dl_tls_dtv_slotinfo_list)->next = NULL;
+ .  
+ .    /* Fill in the information from the loaded modules.  No namespace
+ .       but the base one can be filled at this time.  */
+ 2    assert (GL(dl_ns)[LM_ID_BASE + 1]._ns_loaded == NULL);
+ 1    int i = 0;
+16    for (struct link_map *l = GL(dl_ns)[LM_ID_BASE]._ns_loaded; l != NULL;
+ 8         l = l->l_next)
+ 8      if (l->l_tls_blocksize != 0)
+ .        {
+ .  	/* This is a module with TLS data.  Store the map reference.
+ .  	   The generation counter is zero.  */
+ 2  	slotinfo[i].map = l;
+ .  	/* slotinfo[i].gen = 0; */
+ 1  	++i;
+ .        }
+ 2    assert (i == GL(dl_tls_max_dtv_idx));
+ .  
+ .    /* Compute the TLS offsets for the various blocks.  */
+ 1    _dl_determine_tlsoffset ();
+66  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/elf/../elf/dl-tls.c:_dl_determine_tlsoffset (1x)
+ .  
+ .    /* Construct the static TLS block and the dtv for the initial
+ .       thread.  For some platforms this will include allocating memory
+ .       for the thread descriptor.  The memory for the TLS block will
+ .       never be freed.  It should be allocated accordingly.  The dtv
+ .       array can be changed if dynamic loading requires it.  */
+ 2    void *tcbp = _dl_allocate_tls_storage ();
+375  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/elf/../elf/dl-tls.c:_dl_allocate_tls_storage (1x)
+ 2    if (tcbp == NULL)
+ .      _dl_fatal_printf ("\
+ .  cannot allocate TLS data structures for initial thread");
+ .  
+ .    /* Store for detection of the special case by __tls_get_addr
+ .       so it knows not to pass this dtv to the normal realloc.  */
+ 2    GL(dl_initial_dtv) = GET_DTV (tcbp);
+ .  
+ .    /* And finally install it for the main thread.  */
+ 7    const char *lossage = TLS_INIT_TP (tcbp);
+ .    if (__glibc_unlikely (lossage != NULL))
+ .      _dl_fatal_printf ("cannot set up thread-local storage: %s\n", lossage);
+ 1    tls_init_tp_called = true;
+ .  
+ 1    return tcbp;
+ 3  }
+ .  
+ .  static unsigned int
+ .  do_preload (const char *fname, struct link_map *main_map, const char *where)
+ .  {
+ .    const char *objname;
+ 1    const char *err_str = NULL;
+ .    struct map_args args;
+ .    bool malloced;
+ .  
+ 1    args.str = fname;
+ 1    args.loader = main_map;
+ 1    args.mode = __RTLD_SECURE;
+ .  
+ 1    unsigned int old_nloaded = GL(dl_ns)[LM_ID_BASE]._ns_nloaded;
+ .  
+11    (void) _dl_catch_error (&objname, &err_str, &malloced, map_doit, &args);
+2,202  => ???:0x0000000004000c40 (1x)
+ 3    if (__glibc_unlikely (err_str != NULL))
+ .      {
+ .        _dl_error_printf ("\
+ .  ERROR: ld.so: object '%s' from %s cannot be preloaded (%s): ignored.\n",
+ .  			fname, where, err_str);
+ .        /* No need to call free, this is still before
+ .  	 the libc's malloc is used.  */
+ .      }
+ 4    else if (GL(dl_ns)[LM_ID_BASE]._ns_nloaded != old_nloaded)
+ .      /* It is no duplicate.  */
+ .      return 1;
+ .  
+ .    /* Nothing loaded.  */
+ .    return 0;
+ .  }
+ .  
+ .  #if defined SHARED && defined _LIBC_REENTRANT \
+ .      && defined __rtld_lock_default_lock_recursive
+ .  static void
+ .  rtld_lock_default_lock_recursive (void *lock)
+ .  {
+ 5    __rtld_lock_default_lock_recursive (lock);
+ 5  }
+ .  
+ .  static void
+ .  rtld_lock_default_unlock_recursive (void *lock)
+ .  {
+ 5    __rtld_lock_default_unlock_recursive (lock);
+ 5  }
+ .  #endif
+ .  
+ .  
+ .  static void
+ .  security_init (void)
+ .  {
+ .    /* Set up the stack checker's canary.  */
+ 1    uintptr_t stack_chk_guard = _dl_setup_stack_chk_guard (_dl_random);
+ .  #ifdef THREAD_SET_STACK_GUARD
+ 1    THREAD_SET_STACK_GUARD (stack_chk_guard);
+ .  #else
+ .    __stack_chk_guard = stack_chk_guard;
+ .  #endif
+ .  
+ .    /* Set up the pointer guard as well, if necessary.  */
+ .    uintptr_t pointer_chk_guard
+ .      = _dl_setup_pointer_guard (_dl_random, stack_chk_guard);
+ .  #ifdef THREAD_SET_POINTER_GUARD
+ 1    THREAD_SET_POINTER_GUARD (pointer_chk_guard);
+ .  #endif
+ 1    __pointer_chk_guard_local = pointer_chk_guard;
+ .  
+ .    /* We do not need the _dl_random value anymore.  The less
+ .       information we leave behind, the better, so clear the
+ .       variable.  */
+ 1    _dl_random = NULL;
+ .  }
+ .  
+ .  #include "setup-vdso.h"
+ .  
+ .  /* The library search path.  */
+ .  static const char *library_path attribute_relro;
+ .  /* The list preloaded objects.  */
+ .  static const char *preloadlist attribute_relro;
+-- line 820 ----------------------------------------
+-- line 824 ----------------------------------------
+ .  /* The LD_PRELOAD environment variable gives list of libraries
+ .     separated by white space or colons that are loaded before the
+ .     executable's dependencies and prepended to the global scope list.
+ .     (If the binary is running setuid all elements containing a '/' are
+ .     ignored since it is insecure.)  Return the number of preloads
+ .     performed.  */
+ .  unsigned int
+ .  handle_ld_preload (const char *preloadlist, struct link_map *main_map)
+ 9  {
+ 1    unsigned int npreloads = 0;
+ .    const char *p = preloadlist;
+ .    char fname[SECURE_PATH_LIMIT];
+ .  
+ 4    while (*p != '\0')
+ .      {
+ .        /* Split preload list at space/colon.  */
+ 4        size_t len = strcspn (p, " :");
+223  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/string/../sysdeps/x86_64/strcspn.S:strcspn (1x)
+ 3        if (len > 0 && len < sizeof (fname))
+ .  	{
+ 5  	  memcpy (fname, p, len);
+18  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/string/../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S:memcpy (1x)
+ 2  	  fname[len] = '\0';
+ .  	}
+ .        else
+ .  	fname[0] = '\0';
+ .  
+ .        /* Skip over the substring and the following delimiter.  */
+ 1        p += len;
+ .        if (*p != '\0')
+ 2  	++p;
+ .  
+ 2        if (dso_name_valid_for_suid (fname))
+ .  	npreloads += do_preload (fname, main_map, "LD_PRELOAD");
+ .      }
+ .    return npreloads;
+ 9  }
+ .  
+ .  static void
+ .  dl_main (const ElfW(Phdr) *phdr,
+ .  	 ElfW(Word) phnum,
+ .  	 ElfW(Addr) *user_entry,
+ .  	 ElfW(auxv_t) *auxv)
+12  {
+ .    const ElfW(Phdr) *ph;
+ .    enum mode mode;
+ .    struct link_map *main_map;
+ .    size_t file_size;
+ .    char *file;
+ 1    bool has_interp = false;
+ .    unsigned int i;
+ .    bool prelinked = false;
+ 2    bool rtld_is_main = false;
+ .  #ifndef HP_TIMING_NONAVAIL
+ .    hp_timing_t start;
+ .    hp_timing_t stop;
+ .    hp_timing_t diff;
+ .  #endif
+ 1    void *tcbp = NULL;
+ .  
+ 2    GL(dl_init_static_tls) = &_dl_nothread_init_static_tls;
+ .  
+ .  #if defined SHARED && defined _LIBC_REENTRANT \
+ .      && defined __rtld_lock_default_lock_recursive
+ 2    GL(dl_rtld_lock_recursive) = rtld_lock_default_lock_recursive;
+ 2    GL(dl_rtld_unlock_recursive) = rtld_lock_default_unlock_recursive;
+ .  #endif
+ .  
+ .    /* The explicit initialization here is cheaper than processing the reloc
+ .       in the _rtld_local definition's initializer.  */
+ 2    GL(dl_make_stack_executable_hook) = &_dl_make_stack_executable;
+ .  
+ .    /* Process the environment variable which control the behaviour.  */
+ .    process_envvars (&mode);
+ .  
+ .    /* Set up a flag which tells we are just starting.  */
+ 1    _dl_starting_up = 1;
+ .  
+ 3    if (*user_entry == (ElfW(Addr)) ENTRY_POINT)
+ .      {
+ .        /* Ho ho.  We are not the program interpreter!  We are the program
+ .  	 itself!  This means someone ran ld.so as a command.  Well, that
+ .  	 might be convenient to do sometimes.  We support it by
+ .  	 interpreting the args like this:
+ .  
+ .  	 ld.so PROGRAM ARGS...
+ .  
+-- line 908 ----------------------------------------
+-- line 1091 ----------------------------------------
+ .  	    break;
+ .  	  }
+ .  #endif
+ .      }
+ .    else
+ .      {
+ .        /* Create a link_map for the executable itself.
+ .  	 This will be what dlopen on "" returns.  */
+ 8        main_map = _dl_new_object ((char *) "", "", lt_executable, NULL,
+230  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/elf/dl-object.c:_dl_new_object (1x)
+ .  				 __RTLD_OPENEXEC, LM_ID_BASE);
+ 2        assert (main_map != NULL);
+ 1        main_map->l_phdr = phdr;
+ 2        main_map->l_phnum = phnum;
+ 2        main_map->l_entry = *user_entry;
+ .  
+ .        /* Even though the link map is not yet fully initialized we can add
+ .  	 it to the map list since there are no possible users running yet.  */
+ 3        _dl_add_to_namespace_list (main_map, LM_ID_BASE);
+33  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/elf/dl-object.c:_dl_add_to_namespace_list (1x)
+ 3        assert (main_map == GL(dl_ns)[LM_ID_BASE]._ns_loaded);
+ .  
+ .        /* At this point we are in a bit of trouble.  We would have to
+ .  	 fill in the values for l_dev and l_ino.  But in general we
+ .  	 do not know where the file is.  We also do not handle AT_EXECFD
+ .  	 even if it would be passed up.
+ .  
+ .  	 We leave the values here defined to 0.  This is normally no
+ .  	 problem as the program code itself is normally no shared
+-- line 1117 ----------------------------------------
+-- line 1122 ----------------------------------------
+ .  	 easy way out and because the dynamic binary must also not
+ .  	 have an SONAME we ignore this program for now.  If it becomes
+ .  	 a problem we can force people using SONAMEs.  */
+ .  
+ .        /* We delay initializing the path structure until we got the dynamic
+ .  	 information for the program.  */
+ .      }
+ .  
+ 1    main_map->l_map_end = 0;
+ 1    main_map->l_text_end = 0;
+ .    /* Perhaps the executable has no PT_LOAD header entries at all.  */
+ 1    main_map->l_map_start = ~0;
+ .    /* And it was opened directly.  */
+ 1    ++main_map->l_direct_opencount;
+ .  
+ .    /* Scan the program header table for the dynamic section.  */
+33    for (ph = phdr; ph < &phdr[phnum]; ++ph)
+71      switch (ph->p_type)
+ .        {
+ .        case PT_PHDR:
+ .  	/* Find out the load address.  */
+ 3  	main_map->l_addr = (ElfW(Addr)) phdr - ph->p_vaddr;
+ 1  	break;
+ .        case PT_DYNAMIC:
+ .  	/* This tells us where to find the dynamic section,
+ .  	   which tells us everything we need to do.  */
+ 3  	main_map->l_ld = (void *) main_map->l_addr + ph->p_vaddr;
+ 1  	break;
+ .        case PT_INTERP:
+ .  	/* This "interpreter segment" was used by the program loader to
+ .  	   find the program interpreter, which is this program itself, the
+ .  	   dynamic linker.  We note what name finds us, so that a future
+ .  	   dlopen call or DT_NEEDED entry, for something that wants to link
+ .  	   against the dynamic linker as a shared library, will know that
+ .  	   the shared object is already loaded.  */
+ 2  	_dl_rtld_libname.name = ((const char *) main_map->l_addr
+ 2  				 + ph->p_vaddr);
+ .  	/* _dl_rtld_libname.next = NULL;	Already zero.  */
+ 1  	GL(dl_rtld_map).l_libname = &_dl_rtld_libname;
+ .  
+ .  	/* Ordinarilly, we would get additional names for the loader from
+ .  	   our DT_SONAME.  This can't happen if we were actually linked as
+ .  	   a static executable (detect this case when we have no DYNAMIC).
+ .  	   If so, assume the filename component of the interpreter path to
+ .  	   be our SONAME, and add it to our name list.  */
+ 2  	if (GL(dl_rtld_map).l_ld == NULL)
+ .  	  {
+ .  	    const char *p = NULL;
+ .  	    const char *cp = _dl_rtld_libname.name;
+ .  
+ .  	    /* Find the filename part of the path.  */
+ .  	    while (*cp != '\0')
+ .  	      if (*cp++ == '/')
+ .  		p = cp;
+ .  
+ .  	    if (p != NULL)
+ .  	      {
+ 1  		_dl_rtld_libname2.name = p;
+ .  		/* _dl_rtld_libname2.next = NULL;  Already zero.  */
+ .  		_dl_rtld_libname.next = &_dl_rtld_libname2;
+ .  	      }
+ .  	  }
+ .  
+ 2  	has_interp = true;
+ .  	break;
+ .        case PT_LOAD:
+ .  	{
+ .  	  ElfW(Addr) mapstart;
+ .  	  ElfW(Addr) allocend;
+ .  
+ .  	  /* Remember where the main program starts in memory.  */
+ 4  	  mapstart = (main_map->l_addr
+10  		      + (ph->p_vaddr & ~(GLRO(dl_pagesize) - 1)));
+ 4  	  if (main_map->l_map_start > mapstart)
+ 1  	    main_map->l_map_start = mapstart;
+ .  
+ .  	  /* Also where it ends.  */
+ 4  	  allocend = main_map->l_addr + ph->p_vaddr + ph->p_memsz;
+ 4  	  if (main_map->l_map_end < allocend)
+ 2  	    main_map->l_map_end = allocend;
+ 6  	  if ((ph->p_flags & PF_X) && allocend > main_map->l_text_end)
+ 2  	    main_map->l_text_end = allocend;
+ .  	}
+ .  	break;
+ .  
+ .        case PT_TLS:
+ .  	if (ph->p_memsz > 0)
+ .  	  {
+ .  	    /* Note that in the case the dynamic linker we duplicate work
+ .  	       here since we read the PT_TLS entry already in
+-- line 1211 ----------------------------------------
+-- line 1222 ----------------------------------------
+ .  	    main_map->l_tls_initimage = (void *) ph->p_vaddr;
+ .  
+ .  	    /* This image gets the ID one.  */
+ .  	    GL(dl_tls_max_dtv_idx) = main_map->l_tls_modid = 1;
+ .  	  }
+ .  	break;
+ .  
+ .        case PT_GNU_STACK:
+ 2  	GL(dl_stack_flags) = ph->p_flags;
+ 1  	break;
+ .  
+ .        case PT_GNU_RELRO:
+ 2  	main_map->l_relro_addr = ph->p_vaddr;
+ 2  	main_map->l_relro_size = ph->p_memsz;
+ 1  	break;
+ .        }
+ .  
+ .    /* Adjust the address of the TLS initialization image in case
+ .       the executable is actually an ET_DYN object.  */
+ 3    if (main_map->l_tls_initimage != NULL)
+ .      main_map->l_tls_initimage
+ .        = (char *) main_map->l_tls_initimage + main_map->l_addr;
+ 2    if (! main_map->l_map_end)
+ .      main_map->l_map_end = ~0;
+ 2    if (! main_map->l_text_end)
+ .      main_map->l_text_end = ~0;
+ 3    if (! GL(dl_rtld_map).l_libname && GL(dl_rtld_map).l_name)
+ .      {
+ .        /* We were invoked directly, so the program might not have a
+ .  	 PT_INTERP.  */
+ .        _dl_rtld_libname.name = GL(dl_rtld_map).l_name;
+ .        /* _dl_rtld_libname.next = NULL;	Already zero.  */
+ .        GL(dl_rtld_map).l_libname =  &_dl_rtld_libname;
+ .      }
+ .    else
+ .      assert (GL(dl_rtld_map).l_libname); /* How else did we get here?  */
+ .  
+ .    /* If the current libname is different from the SONAME, add the
+ .       latter as well.  */
+ 3    if (GL(dl_rtld_map).l_info[DT_SONAME] != NULL
+ 9        && strcmp (GL(dl_rtld_map).l_libname->name,
+42  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/string/../sysdeps/x86_64/strcmp.S:strcmp (1x)
+ .  		 (const char *) D_PTR (&GL(dl_rtld_map), l_info[DT_STRTAB])
+ .  		 + GL(dl_rtld_map).l_info[DT_SONAME]->d_un.d_val) != 0)
+ .      {
+ .        static struct libname_list newname;
+ 2        newname.name = ((char *) D_PTR (&GL(dl_rtld_map), l_info[DT_STRTAB])
+ .  		      + GL(dl_rtld_map).l_info[DT_SONAME]->d_un.d_ptr);
+ 1        newname.next = NULL;
+ 1        newname.dont_free = 1;
+ .  
+ 2        assert (GL(dl_rtld_map).l_libname->next == NULL);
+ 2        GL(dl_rtld_map).l_libname->next = &newname;
+ .      }
+ .    /* The ld.so must be relocated since otherwise loading audit modules
+ .       will fail since they reuse the very same ld.so.  */
+ 2    assert (GL(dl_rtld_map).l_relocated);
+ .  
+ 2    if (! rtld_is_main)
+ .      {
+ .        /* Extract the contents of the dynamic section for easy access.  */
+ .        elf_get_dynamic_info (main_map, NULL);
+ .        /* Set up our cache of pointers into the hash table.  */
+ 2        _dl_setup_hash (main_map);
+23  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/elf/dl-lookup.c:_dl_setup_hash (1x)
+ .      }
+ .  
+ 2    if (__builtin_expect (mode, normal) == verify)
+ .      {
+ .        /* We were called just to verify that this is a dynamic
+ .  	 executable using us as the program interpreter.  Exit with an
+ .  	 error if we were not able to load the binary or no interpreter
+ .  	 is specified (i.e., this is no dynamically linked binary.  */
+ .        if (main_map->l_ld == NULL)
+ .  	_exit (1);
+ .  
+ .        /* We allow here some platform specific code.  */
+ .  #ifdef DISTINGUISH_LIB_VERSIONS
+ .        DISTINGUISH_LIB_VERSIONS;
+ .  #endif
+ .        _exit (has_interp ? 0 : 2);
+ .      }
+ .  
+ 5    struct link_map **first_preload = &GL(dl_rtld_map).l_next;
+ .    /* Set up the data structures for the system-supplied DSO early,
+ .       so they can influence _dl_init_paths.  */
+ .    setup_vdso (main_map, &first_preload);
+ .  
+ .  #ifdef DL_SYSDEP_OSCHECK
+10    DL_SYSDEP_OSCHECK (_dl_fatal_printf);
+95  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/elf/../sysdeps/unix/sysv/linux/dl-sysdep.c:_dl_discover_osversion (1x)
+ .  #endif
+ .  
+ .    /* Initialize the data structures for the search paths for shared
+ .       objects.  */
+ 2    _dl_init_paths (library_path);
+515  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/elf/dl-load.c:_dl_init_paths (1x)
+ .  
+ .    /* Initialize _r_debug.  */
+ 4    struct r_debug *r = _dl_debug_initialize (GL(dl_rtld_map).l_addr,
+17  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/elf/dl-debug.c:_dl_debug_initialize (1x)
+ .  					    LM_ID_BASE);
+ 1    r->r_state = RT_CONSISTENT;
+ .  
+ .    /* Put the link_map for ourselves on the chain so it can be found by
+ .       name.  Note that at this point the global chain of link maps contains
+ .       exactly one element, which is pointed to by dl_loaded.  */
+ 2    if (! GL(dl_rtld_map).l_name)
+ .      /* If not invoked directly, the dynamic linker shared object file was
+ .         found by the PT_INTERP name.  */
+ 3      GL(dl_rtld_map).l_name = (char *) GL(dl_rtld_map).l_libname->name;
+ 4    GL(dl_rtld_map).l_type = lt_library;
+ 2    main_map->l_next = &GL(dl_rtld_map);
+ 1    GL(dl_rtld_map).l_prev = main_map;
+ 1    ++GL(dl_ns)[LM_ID_BASE]._ns_nloaded;
+ 1    ++GL(dl_load_adds);
+ .  
+ .    /* If LD_USE_LOAD_BIAS env variable has not been seen, default
+ .       to not using bias for non-prelinked PIEs and libraries
+ .       and using it for executables or prelinked PIEs or libraries.  */
+ 2    if (GLRO(dl_use_load_bias) == (ElfW(Addr)) -2)
+ 5      GLRO(dl_use_load_bias) = main_map->l_addr == 0 ? -1 : 0;
+ .  
+ .    /* Set up the program header information for the dynamic linker
+ .       itself.  It is needed in the dl_iterate_phdr callbacks.  */
+ .    const ElfW(Ehdr) *rtld_ehdr;
+ .  
+ .    /* Starting from binutils-2.23, the linker will define the magic symbol
+ .       __ehdr_start to point to our own ELF header if it is visible in a
+ .       segment that also includes the phdrs.  If that's not available, we use
+-- line 1346 ----------------------------------------
+-- line 1347 ----------------------------------------
+ .       the old method that assumes the beginning of the file is part of the
+ .       lowest-addressed PT_LOAD segment.  */
+ .  #ifdef HAVE_EHDR_START
+ .    extern const ElfW(Ehdr) __ehdr_start __attribute__ ((visibility ("hidden")));
+ .    rtld_ehdr = &__ehdr_start;
+ .  #else
+ .    rtld_ehdr = (void *) GL(dl_rtld_map).l_map_start;
+ .  #endif
+ 2    assert (rtld_ehdr->e_ehsize == sizeof *rtld_ehdr);
+ 2    assert (rtld_ehdr->e_phentsize == sizeof (ElfW(Phdr)));
+ .  
+ 3    const ElfW(Phdr) *rtld_phdr = (const void *) rtld_ehdr + rtld_ehdr->e_phoff;
+ .  
+ 1    GL(dl_rtld_map).l_phdr = rtld_phdr;
+ 3    GL(dl_rtld_map).l_phnum = rtld_ehdr->e_phnum;
+ .  
+ .  
+ .    /* PT_GNU_RELRO is usually the last phdr.  */
+ .    size_t cnt = rtld_ehdr->e_phnum;
+ 4    while (cnt-- > 0)
+ 5      if (rtld_phdr[cnt].p_type == PT_GNU_RELRO)
+ .        {
+ 2  	GL(dl_rtld_map).l_relro_addr = rtld_phdr[cnt].p_vaddr;
+ 2  	GL(dl_rtld_map).l_relro_size = rtld_phdr[cnt].p_memsz;
+ .  	break;
+ .        }
+ .  
+ .    /* Add the dynamic linker to the TLS list if it also uses TLS.  */
+ 2    if (GL(dl_rtld_map).l_tls_blocksize != 0)
+ .      /* Assign a module ID.  Do this before loading any audit modules.  */
+ .      GL(dl_rtld_map).l_tls_modid = _dl_next_tls_modid ();
+ .  
+ .    /* If we have auditing DSOs to load, do it now.  */
+ 1    bool need_security_init = true;
+ 4    if (__glibc_unlikely (audit_list != NULL)
+ 2        || __glibc_unlikely (audit_list_string != NULL))
+ .      {
+ .        struct audit_ifaces *last_audit = NULL;
+ .        struct audit_list_iter al_iter;
+ .        audit_list_iter_init (&al_iter);
+ .  
+ .        /* Since we start using the auditing DSOs right away we need to
+ .  	 initialize the data structures now.  */
+ .        tcbp = init_tls ();
+-- line 1390 ----------------------------------------
+-- line 1553 ----------------------------------------
+ .  		  afct = afct->next;
+ .  		}
+ .  	    }
+ .  	}
+ .      }
+ .  
+ .    /* Keep track of the currently loaded modules to count how many
+ .       non-audit modules which use TLS are loaded.  */
+ 2    size_t count_modids = _dl_count_modids ();
+ 4  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/elf/../elf/dl-tls.c:_dl_count_modids (1x)
+ .  
+ .    /* Set up debugging before the debugger is notified for the first time.  */
+ .  #ifdef ELF_MACHINE_DEBUG_SETUP
+ .    /* Some machines (e.g. MIPS) don't use DT_DEBUG in this way.  */
+ .    ELF_MACHINE_DEBUG_SETUP (main_map, r);
+ .    ELF_MACHINE_DEBUG_SETUP (&GL(dl_rtld_map), r);
+ .  #else
+ 3    if (main_map->l_info[DT_DEBUG] != NULL)
+ .      /* There is a DT_DEBUG entry in the dynamic section.  Fill it in
+ .         with the run-time address of the r_debug structure  */
+ 2      main_map->l_info[DT_DEBUG]->d_un.d_ptr = (ElfW(Addr)) r;
+ .  
+ .    /* Fill in the pointer in the dynamic linker's own dynamic section, in
+ .       case you run gdb on the dynamic linker directly.  */
+ 3    if (GL(dl_rtld_map).l_info[DT_DEBUG] != NULL)
+ .      GL(dl_rtld_map).l_info[DT_DEBUG]->d_un.d_ptr = (ElfW(Addr)) r;
+ .  #endif
+ .  
+ .    /* We start adding objects.  */
+ 2    r->r_state = RT_ADD;
+ 1    _dl_debug_state ();
+ 1  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/elf/dl-debug.c:_dl_debug_state (1x)
+ 1    LIBC_PROBE (init_start, 2, LM_ID_BASE, r);
+ .  
+ .    /* Auditing checkpoint: we are ready to signal that the initial map
+ .       is being constructed.  */
+ 2    if (__glibc_unlikely (GLRO(dl_naudit) > 0))
+ .      {
+ .        struct audit_ifaces *afct = GLRO(dl_audit);
+ .        for (unsigned int cnt = 0; cnt < GLRO(dl_naudit); ++cnt)
+ .  	{
+ .  	  if (afct->activity != NULL)
+ .  	    afct->activity (&main_map->l_audit[cnt].cookie, LA_ACT_ADD);
+ .  
+ .  	  afct = afct->next;
+ .  	}
+ .      }
+ .  
+ .    /* We have two ways to specify objects to preload: via environment
+ .       variable and via the file /etc/ld.so.preload.  The latter can also
+ .       be used when security is enabled.  */
+ 3    assert (*first_preload == NULL);
+ 1    struct link_map **preloads = NULL;
+ 1    unsigned int npreloads = 0;
+ .  
+ 3    if (__glibc_unlikely (preloadlist != NULL))
+ .      {
+ 5        HP_TIMING_NOW (start);
+ 3        npreloads += handle_ld_preload (preloadlist, main_map);
+2,511  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/elf/rtld.c:handle_ld_preload (1x)
+ 4        HP_TIMING_NOW (stop);
+ .        HP_TIMING_DIFF (diff, start, stop);
+ 2        HP_TIMING_ACCUM_NT (load_time, diff);
+ .      }
+ .  
+ .    /* There usually is no ld.so.preload file, it should only be used
+ .       for emergencies and testing.  So the open call etc should usually
+ .       fail.  Using access() on a non-existing file is faster than using
+ .       open().  So we do this first.  If it succeeds we do almost twice
+ .       the work but this does not matter, since it is not for production
+ .       use.  */
+ .    static const char preload_file[] = "/etc/ld.so.preload";
+ 5    if (__glibc_unlikely (__access (preload_file, R_OK) == 0))
+ 9  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/io/../sysdeps/unix/sysv/linux/access.c:access (1x)
+ .      {
+ .        /* Read the contents of the file.  */
+ .        file = _dl_sysdep_read_whole_file (preload_file, &file_size,
+ .  					 PROT_READ | PROT_WRITE);
+ .        if (__glibc_unlikely (file != MAP_FAILED))
+ .  	{
+ .  	  /* Parse the file.  It contains names of libraries to be loaded,
+ .  	     separated by white spaces or `:'.  It may also contain
+-- line 1630 ----------------------------------------
+-- line 1691 ----------------------------------------
+ .  	  HP_TIMING_DIFF (diff, start, stop);
+ .  	  HP_TIMING_ACCUM_NT (load_time, diff);
+ .  
+ .  	  /* We don't need the file anymore.  */
+ .  	  __munmap (file, file_size);
+ .  	}
+ .      }
+ .  
+ 4    if (__glibc_unlikely (*first_preload != NULL))
+ .      {
+ .        /* Set up PRELOADS with a vector of the preloaded libraries.  */
+ .        struct link_map *l = *first_preload;
+ 8        preloads = __alloca (npreloads * sizeof preloads[0]);
+ 1        i = 0;
+ .        do
+ .  	{
+ 3  	  preloads[i++] = l;
+ 1  	  l = l->l_next;
+ 2  	} while (l);
+ 2        assert (i == npreloads);
+ .      }
+ .  
+ .    /* Load all the libraries specified by DT_NEEDED entries.  If LD_PRELOAD
+ .       specified some libraries to load, these are inserted before the actual
+ .       dependencies in the executable's searchlist for symbol resolution.  */
+ 5    HP_TIMING_NOW (start);
+ 8    _dl_map_object_deps (main_map, preloads, npreloads, mode == trace, 0);
+5,812  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/elf/dl-deps.c:_dl_map_object_deps (1x)
+ 4    HP_TIMING_NOW (stop);
+ .    HP_TIMING_DIFF (diff, start, stop);
+ 2    HP_TIMING_ACCUM_NT (load_time, diff);
+ .  
+ .    /* Mark all objects as being in the global scope.  */
+11    for (i = main_map->l_searchlist.r_nlist; i > 0; )
+16      main_map->l_searchlist.r_list[--i]->l_global = 1;
+ .  
+ .    /* Remove _dl_rtld_map from the chain.  */
+ 3    GL(dl_rtld_map).l_prev->l_next = GL(dl_rtld_map).l_next;
+ 3    if (GL(dl_rtld_map).l_next != NULL)
+ 1      GL(dl_rtld_map).l_next->l_prev = GL(dl_rtld_map).l_prev;
+ .  
+12    for (i = 1; i < main_map->l_searchlist.r_nlist; ++i)
+11      if (main_map->l_searchlist.r_list[i] == &GL(dl_rtld_map))
+ .        break;
+ .  
+ .    bool rtld_multiple_ref = false;
+ .    if (__glibc_likely (i < main_map->l_searchlist.r_nlist))
+ .      {
+ .        /* Some DT_NEEDED entry referred to the interpreter object itself, so
+ .  	 put it back in the list of visible objects.  We insert it into the
+ .  	 chain in symbol search order because gdb uses the chain's order as
+ .  	 its symbol search order.  */
+ 2        rtld_multiple_ref = true;
+ .  
+ 3        GL(dl_rtld_map).l_prev = main_map->l_searchlist.r_list[i - 1];
+ 2        if (__builtin_expect (mode, normal) == normal)
+ .  	{
+ 2  	  GL(dl_rtld_map).l_next = (i + 1 < main_map->l_searchlist.r_nlist
+ .  				    ? main_map->l_searchlist.r_list[i + 1]
+ 3  				    : NULL);
+ .  #ifdef NEED_DL_SYSINFO_DSO
+ 3  	  if (GLRO(dl_sysinfo_map) != NULL
+ .  	      && GL(dl_rtld_map).l_prev->l_next == GLRO(dl_sysinfo_map)
+ .  	      && GL(dl_rtld_map).l_next != GLRO(dl_sysinfo_map))
+ .  	    GL(dl_rtld_map).l_prev = GLRO(dl_sysinfo_map);
+ .  #endif
+ .  	}
+ .        else
+ .  	/* In trace mode there might be an invisible object (which we
+ .  	   could not find) after the previous one in the search list.
+ .  	   In this case it doesn't matter much where we put the
+ .  	   interpreter object, so we just initialize the list pointer so
+ .  	   that the assertion below holds.  */
+ .  	GL(dl_rtld_map).l_next = GL(dl_rtld_map).l_prev->l_next;
+ .  
+ 4        assert (GL(dl_rtld_map).l_prev->l_next == GL(dl_rtld_map).l_next);
+ 2        GL(dl_rtld_map).l_prev->l_next = &GL(dl_rtld_map);
+ 3        if (GL(dl_rtld_map).l_next != NULL)
+ .  	{
+ .  	  assert (GL(dl_rtld_map).l_next->l_prev == GL(dl_rtld_map).l_prev);
+ .  	  GL(dl_rtld_map).l_next->l_prev = &GL(dl_rtld_map);
+ .  	}
+ .      }
+ .  
+ .    /* Now let us see whether all libraries are available in the
+ .       versions we need.  */
+ .    {
+ .      struct version_check_args args;
+ 4      args.doexit = mode == normal;
+ 1      args.dotrace = mode == trace;
+ 6      _dl_receive_error (print_missing_version, version_check_doit, &args);
+2,428  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/elf/dl-error-skeleton.c:_dl_receive_error (1x)
+ .    }
+ .  
+ .    /* We do not initialize any of the TLS functionality unless any of the
+ .       initial modules uses TLS.  This makes dynamic loading of modules with
+ .       TLS impossible, but to support it requires either eagerly doing setup
+ .       now or lazily doing it later.  Doing it now makes us incompatible with
+ .       an old kernel that can't perform TLS_INIT_TP, even if no TLS is ever
+ .       used.  Trying to do it lazily is too hairy to try when there could be
+ .       multiple threads (from a non-TLS-using libpthread).  */
+ 2    bool was_tls_init_tp_called = tls_init_tp_called;
+ 2    if (tcbp == NULL)
+ 2      tcbp = init_tls ();
+542  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/elf/rtld.c:init_tls (1x)
+ .  
+ 2    if (__glibc_likely (need_security_init))
+ .      /* Initialize security features.  But only if we have not done it
+ .         earlier.  */
+ .      security_init ();
+ .  
+ 2    if (__builtin_expect (mode, normal) != normal)
+ .      {
+ .        /* We were run just to list the shared libraries.  It is
+ .  	 important that we do this before real relocation, because the
+ .  	 functions we call below for output may no longer work properly
+ .  	 after relocation.  */
+ .        struct link_map *l;
+ .  
+ .        if (GLRO(dl_debug_mask) & DL_DEBUG_PRELINK)
+-- line 1807 ----------------------------------------
+-- line 2021 ----------------------------------------
+ .  		    }
+ .  		}
+ .  	    }
+ .  	}
+ .  
+ .        _exit (0);
+ .      }
+ .  
+ 3    if (main_map->l_info[ADDRIDX (DT_GNU_LIBLIST)]
+ .        && ! __builtin_expect (GLRO(dl_profile) != NULL, 0)
+ .        && ! __builtin_expect (GLRO(dl_dynamic_weak), 0))
+ .      {
+ .        ElfW(Lib) *liblist, *liblistend;
+ .        struct link_map **r_list, **r_listend, *l;
+ .        const char *strtab = (const void *) D_PTR (main_map, l_info[DT_STRTAB]);
+ .  
+ .        assert (main_map->l_info[VALIDX (DT_GNU_LIBLISTSZ)] != NULL);
+-- line 2037 ----------------------------------------
+-- line 2077 ----------------------------------------
+ .  
+ .        if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_LIBS))
+ .  	_dl_debug_printf ("\nprelink checking: %s\n",
+ .  			  prelinked ? "ok" : "failed");
+ .      }
+ .  
+ .  
+ .    /* Now set up the variable which helps the assembler startup code.  */
+ 2    GL(dl_ns)[LM_ID_BASE]._ns_main_searchlist = &main_map->l_searchlist;
+ .  
+ .    /* Save the information about the original global scope list since
+ .       we need it in the memory handling later.  */
+ 2    GLRO(dl_initial_searchlist) = *GL(dl_ns)[LM_ID_BASE]._ns_main_searchlist;
+ .  
+ .    /* Remember the last search directory added at startup, now that
+ .       malloc will no longer be the one from dl-minimal.c.  */
+ 2    GLRO(dl_init_all_dirs) = GL(dl_all_dirs);
+ .  
+ .    /* Print scope information.  */
+ 2    if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_SCOPES))
+ .      {
+ .        _dl_debug_printf ("\nInitial object scopes\n");
+ .  
+ .        for (struct link_map *l = main_map; l != NULL; l = l->l_next)
+ .  	_dl_show_scope (l, 0);
+ .      }
+ .  
+ .    if (prelinked)
+-- line 2104 ----------------------------------------
+-- line 2142 ----------------------------------------
+ .  	 the dynamic linker itself.  We do this in reverse order so that copy
+ .  	 relocs of earlier objects overwrite the data written by later
+ .  	 objects.  We do not re-relocate the dynamic linker itself in this
+ .  	 loop because that could result in the GOT entries for functions we
+ .  	 call being changed, and that would break us.  It is safe to relocate
+ .  	 the dynamic linker out of order because it has no copy relocs (we
+ .  	 know that because it is self-contained).  */
+ .  
+ 3        int consider_profiling = GLRO(dl_profile) != NULL;
+ .  #ifndef HP_TIMING_NONAVAIL
+ .        hp_timing_t start;
+ .        hp_timing_t stop;
+ .  #endif
+ .  
+ .        /* If we are profiling we also must do lazy reloaction.  */
+ 1        GLRO(dl_lazy) |= consider_profiling;
+ .  
+ 5        HP_TIMING_NOW (start);
+ 1        unsigned i = main_map->l_searchlist.r_nlist;
+18        while (i-- > 0)
+ .  	{
+ 8  	  struct link_map *l = main_map->l_initfini[i];
+ .  
+ .  	  /* While we are at it, help the memory handling a bit.  We have to
+ .  	     mark some data structures as allocated with the fake malloc()
+ .  	     implementation in ld.so.  */
+ 8  	  struct libname_list *lnp = l->l_libname->next;
+ .  
+10  	  while (__builtin_expect (lnp != NULL, 0))
+ .  	    {
+ 1  	      lnp->dont_free = 1;
+ 1  	      lnp = lnp->next;
+ .  	    }
+ .  	  /* Also allocated with the fake malloc().  */
+ 4  	  l->l_free_initfini = 0;
+ .  
+ 8  	  if (l != &GL(dl_rtld_map))
+24  	    _dl_relocate_object (l, l->l_scope, GLRO(dl_lazy) ? RTLD_LAZY : 0,
+70,715  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/elf/dl-reloc.c:_dl_relocate_object (3x)
+ .  				 consider_profiling);
+ .  
+ .  	  /* Add object to slot information data if necessasy.  */
+10  	  if (l->l_tls_blocksize != 0 && tls_init_tp_called)
+ 3  	    _dl_add_to_slotinfo (l);
+20  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/elf/../elf/dl-tls.c:_dl_add_to_slotinfo (1x)
+ .  	}
+ 4        HP_TIMING_NOW (stop);
+ .  
+ 3        HP_TIMING_DIFF (relocate_time, start, stop);
+ .  
+ .        /* Now enable profiling if needed.  Like the previous call,
+ .  	 this has to go here because the calls it makes should use the
+ .  	 rtld versions of the functions (particularly calloc()), but it
+ .  	 needs to have _dl_profile_map set up by the relocator.  */
+ 2        if (__glibc_unlikely (GL(dl_profile_map) != NULL))
+ .  	/* We must prepare the profiling.  */
+ .  	_dl_start_profile ();
+ .      }
+ .  
+ 4    if ((!was_tls_init_tp_called && GL(dl_tls_max_dtv_idx) > 0)
+ .        || count_modids != _dl_count_modids ())
+ 1      ++GL(dl_tls_generation);
+ .  
+ .    /* Now that we have completed relocation, the initializer data
+ .       for the TLS blocks has its final values and we can copy them
+ .       into the main thread's TLS area, which we allocated above.  */
+ 3    _dl_allocate_tls_init (tcbp);
+146  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/elf/../elf/dl-tls.c:_dl_allocate_tls_init (1x)
+ .  
+ .    /* And finally install it for the main thread.  */
+ 2    if (! tls_init_tp_called)
+ .      {
+ .        const char *lossage = TLS_INIT_TP (tcbp);
+ .        if (__glibc_unlikely (lossage != NULL))
+ .  	_dl_fatal_printf ("cannot set up thread-local storage: %s\n",
+ .  			  lossage);
+ .      }
+ .  
+ .    /* Make sure no new search directories have been added.  */
+ 3    assert (GLRO(dl_init_all_dirs) == GL(dl_all_dirs));
+ .  
+ 4    if (! prelinked && rtld_multiple_ref)
+ .      {
+ .        /* There was an explicit ref to the dynamic linker as a shared lib.
+ .  	 Re-relocate ourselves with user-controlled symbol definitions.
+ .  
+ .  	 We must do this after TLS initialization in case after this
+ .  	 re-relocation, we might call a user-supplied function
+ .  	 (e.g. calloc from _dl_relocate_object) that uses TLS data.  */
+ .  
+ .  #ifndef HP_TIMING_NONAVAIL
+ .        hp_timing_t start;
+ .        hp_timing_t stop;
+ .        hp_timing_t add;
+ .  #endif
+ .  
+ 5        HP_TIMING_NOW (start);
+ .        /* Mark the link map as not yet relocated again.  */
+ 1        GL(dl_rtld_map).l_relocated = 0;
+ 5        _dl_relocate_object (&GL(dl_rtld_map), main_map->l_scope, 0, 0);
+4,619  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/elf/dl-reloc.c:_dl_relocate_object (1x)
+ 4        HP_TIMING_NOW (stop);
+ .        HP_TIMING_DIFF (add, start, stop);
+ 2        HP_TIMING_ACCUM_NT (relocate_time, add);
+ .      }
+ .  
+ .    /* Do any necessary cleanups for the startup OS interface code.
+ .       We do these now so that no calls are made after rtld re-relocation
+ .       which might be resolved to different functions than we expect.
+ .       We cannot do this before relocating the other objects because
+ .       _dl_relocate_object might need to call `mprotect' for DT_TEXTREL.  */
+ 1    _dl_sysdep_start_cleanup ();
+ 1  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/elf/../elf/dl-sysdep.c:_dl_sysdep_start_cleanup (1x)
+ .  
+ .  #ifdef SHARED
+ .    /* Auditing checkpoint: we have added all objects.  */
+ 2    if (__glibc_unlikely (GLRO(dl_naudit) > 0))
+ .      {
+ .        struct link_map *head = GL(dl_ns)[LM_ID_BASE]._ns_loaded;
+ .        /* Do not call the functions for any auditing object.  */
+ .        if (head->l_auditing == 0)
+ .  	{
+ .  	  struct audit_ifaces *afct = GLRO(dl_audit);
+ .  	  for (unsigned int cnt = 0; cnt < GLRO(dl_naudit); ++cnt)
+ .  	    {
+-- line 2261 ----------------------------------------
+-- line 2265 ----------------------------------------
+ .  	      afct = afct->next;
+ .  	    }
+ .  	}
+ .      }
+ .  #endif
+ .  
+ .    /* Notify the debugger all new objects are now ready to go.  We must re-get
+ .       the address since by now the variable might be in another object.  */
+ 4    r = _dl_debug_initialize (0, LM_ID_BASE);
+ 8  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/elf/dl-debug.c:_dl_debug_initialize (1x)
+ 1    r->r_state = RT_CONSISTENT;
+ 1    _dl_debug_state ();
+ 1  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/elf/dl-debug.c:_dl_debug_state (1x)
+ 1    LIBC_PROBE (init_complete, 2, LM_ID_BASE, r);
+ .  
+ .  #if defined USE_LDCONFIG && !defined MAP_COPY
+ .    /* We must munmap() the cache file.  */
+ 1    _dl_unload_cache ();
+15  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/elf/dl-cache.c:_dl_unload_cache (1x)
+ .  #endif
+ .  
+ .    /* Once we return, _dl_sysdep_start will invoke
+ .       the DT_INIT functions and then *USER_ENTRY.  */
+ 8  }
+ .  
+ .  /* This is a little helper function for resolving symbols while
+ .     tracing the binary.  */
+ .  static void
+ .  print_unresolved (int errcode __attribute__ ((unused)), const char *objname,
+ .  		  const char *errstring)
+ .  {
+ .    if (objname[0] == '\0')
+-- line 2293 ----------------------------------------
+-- line 2443 ----------------------------------------
+ .     Since all of them start with `LD_' we are a bit smarter while finding
+ .     all the entries.  */
+ .  extern char **_environ attribute_hidden;
+ .  
+ .  
+ .  static void
+ .  process_envvars (enum mode *modep)
+ .  {
+ 2    char **runp = _environ;
+ .    char *envline;
+ 1    enum mode mode = normal;
+ 1    char *debug_output = NULL;
+ .  
+ .    /* This is the default place for profiling data file.  */
+ .    GLRO(dl_profile_output)
+ 8      = &"/var/tmp\0/var/profile"[__libc_enable_secure ? 9 : 0];
+ .  
+10    while ((envline = _dl_next_ld_env_entry (&runp)) != NULL)
+474  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/elf/dl-environ.c:_dl_next_ld_env_entry (2x)
+ .      {
+ 1        size_t len = 0;
+ .  
+40        while (envline[len] != '\0' && envline[len] != '=')
+ 7  	++len;
+ .  
+ 2        if (envline[len] != '=')
+ .  	/* This is a "LD_" variable at the end of the string without
+ .  	   a '=' character.  Ignore it since otherwise we will access
+ .  	   invalid memory below.  */
+ .  	continue;
+ .  
+ 7        switch (len)
+ .  	{
+ .  	case 4:
+ .  	  /* Warning level, verbose or not.  */
+ .  	  if (memcmp (envline, "WARN", 4) == 0)
+ .  	    GLRO(dl_verbose) = envline[5] != '\0';
+ .  	  break;
+ .  
+ .  	case 5:
+-- line 2481 ----------------------------------------
+-- line 2486 ----------------------------------------
+ .  	      break;
+ .  	    }
+ .  	  if (memcmp (envline, "AUDIT", 5) == 0)
+ .  	    audit_list_string = &envline[6];
+ .  	  break;
+ .  
+ .  	case 7:
+ .  	  /* Print information about versions.  */
+ 2  	  if (memcmp (envline, "VERBOSE", 7) == 0)
+ .  	    {
+ .  	      version_info = envline[8] != '\0';
+ .  	      break;
+ .  	    }
+ .  
+ .  	  /* List of objects to be preloaded.  */
+ 6  	  if (memcmp (envline, "PRELOAD", 7) == 0)
+36  => /usr/src/debug/glibc-2.25-123-gedcf13e25c/string/../sysdeps/x86_64/memcmp.S:bcmp (1x)
+ .  	    {
+ 3  	      preloadlist = &envline[8];
+ .  	      break;
+ .  	    }
+ .  
+ .  	  /* Which shared object shall be profiled.  */
+ .  	  if (memcmp (envline, "PROFILE", 7) == 0 && envline[8] != '\0')
+ .  	    GLRO(dl_profile) = &envline[8];
+ .  	  break;
+ .  
+-- line 2511 ----------------------------------------
+-- line 2613 ----------------------------------------
+ .  	}
+ .      }
+ .  
+ .    /* The caller wants this information.  */
+ .    *modep = mode;
+ .  
+ .    /* Extra security for SUID binaries.  Remove all dangerous environment
+ .       variables.  */
+ 3    if (__builtin_expect (__libc_enable_secure, 0))
+ .      {
+ .        static const char unsecure_envvars[] =
+ .  #ifdef EXTRA_UNSECURE_ENVVARS
+ .  	EXTRA_UNSECURE_ENVVARS
+ .  #endif
+ .  	UNSECURE_ENVVARS;
+ .        const char *nextp;
+ .  
+-- line 2629 ----------------------------------------
+-- line 2645 ----------------------------------------
+ .  	}
+ .  
+ .        if (mode != normal)
+ .  	_exit (5);
+ .      }
+ .    /* If we have to run the dynamic linker in debugging mode and the
+ .       LD_DEBUG_OUTPUT environment variable is given, we write the debug
+ .       messages to this file.  */
+ 3    else if (any_debug && debug_output != NULL)
+ .      {
+ .  #ifdef O_NOFOLLOW
+ .        const int flags = O_WRONLY | O_APPEND | O_CREAT | O_NOFOLLOW;
+ .  #else
+ .        const int flags = O_WRONLY | O_APPEND | O_CREAT;
+ .  #endif
+ .        size_t name_len = strlen (debug_output);
+ .        char buf[name_len + 12];
+-- line 2661 ----------------------------------------
+
+--------------------------------------------------------------------------------
+ Ir 
+--------------------------------------------------------------------------------
+100  percentage of events annotated
+
